@@ -14,7 +14,8 @@ fn main() {
     let display = Arc::new(Mutex::new(display));
 
     let mut gui_layer = GuiLayer::new(DisplayWrapper(display.clone()));
-    gui_layer.test_draw();
+    gui_layer.draw();
+    // gui_layer.test_draw();
 
     // 显示
     let output_settings = OutputSettingsBuilder::new().build();

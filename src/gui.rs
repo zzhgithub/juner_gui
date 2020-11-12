@@ -9,25 +9,17 @@ use embedded_graphics::{
     style::{PrimitiveStyle, TextStyle},
 };
 
-// 顶层的GUI 抽象
-#[derive(Clone)]
-pub struct Gui {
-    //高
-    height: u32,
-    //宽
-    width: u32,
-    // 层级
-    level: usize,
-    // 位置 (x,y)
-    position: (u32, u32),
-    // 这里还有一套 子组件 ？？考虑是否要名字？
-    childern: Vec<Box<Gui>>,
-    //todo 事件绑定？
-}
+use crate::component::whiteboard::Whiteboard;
 
-trait DisplayUi {
+pub trait DisplayUi {
+    // 重新设置 等级
+    fn level(&mut self, level: usize);
+    // 重新定义位置
+    fn position(&mut self, position: (u32, u32));
+    // 重新定义
+    fn resize(&mut self, height: u32, width: u32);
     // 绘图方法
-    fn draw(&self) -> !;
+    fn draw(&mut self);
 }
 
 // 顶层GUI容器
@@ -36,11 +28,11 @@ where
     D: DrawTarget<Rgb888>,
 {
     //高
-    height: u32,
+    pub height: u32,
     //宽
-    width: u32,
-    graphic: D,
-    // root_gui: Gui,
+    pub width: u32,
+    pub graphic: D,
+    pub components: Vec<Box<dyn DisplayUi>>,
 }
 
 impl<D> GuiLayer<D>
@@ -48,16 +40,28 @@ where
     D: DrawTarget<Rgb888>,
 {
     pub fn new(graphic: D) -> Self {
+        let mut size = graphic.size();
         GuiLayer {
-            width: graphic.size().width,
-            height: graphic.size().height,
+            height: size.height,
+            width: size.width,
             graphic: graphic,
-            // todo 这里要设置最上级的 gui
+            components: vec![Box::new(Whiteboard::new(
+                size.width,
+                size.height,
+                0,
+                (0, 0),
+                Rgb888::new(255, 255, 255),
+            ))],
         }
     }
 
     // 要有一个draw方法？
-    
+    pub fn draw(&mut self) {
+        for component in self.components.iter_mut() {
+            component.draw();
+        }
+    }
+
     // 测试画图方法
     pub fn test_draw(&mut self) {
         let c =

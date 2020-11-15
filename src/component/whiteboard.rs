@@ -1,4 +1,4 @@
-use embedded_graphics::pixelcolor::Rgb888;
+use embedded_graphics::{drawable::Pixel, pixelcolor::Rgb888, prelude::Point};
 
 use crate::gui::DisplayUi;
 pub struct Whiteboard {
@@ -7,6 +7,7 @@ pub struct Whiteboard {
     pub level: usize,
     pub position: (u32, u32),
     pub color: Rgb888,
+    pub locked: bool,
 }
 
 impl Whiteboard {
@@ -18,6 +19,7 @@ impl Whiteboard {
             level,
             position,
             color,
+            locked: false,
         }
     }
 }
@@ -37,10 +39,24 @@ impl DisplayUi for Whiteboard {
     }
 
     fn draw(&mut self) {
-       for i in (0..self.width) {
-           for j in (0..self.height){
-                //
-           }
-       }
+        unimplemented!()
+    }
+
+    // 刷新缓存的方法 然一个统一的地方的缓存刷新
+    fn flush(&mut self) {
+        use crate::gui::DISPLAY_BUFFER;
+        let (x, y) = self.position;
+        if !self.locked {
+            for i in x..self.height {
+                for j in y..self.width {
+                    // 画全部的点
+                    DISPLAY_BUFFER
+                        .write()
+                        .push(Pixel(Point::new(i as i32, j as i32), self.color));
+                    // 这里的内存怎么不溢出
+                }
+            }
+            self.locked = true;
+        }
     }
 }

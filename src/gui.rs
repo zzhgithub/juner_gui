@@ -2,14 +2,20 @@ use alloc::boxed::Box;
 use alloc::vec::Vec;
 use embedded_graphics::{
     fonts::{Font6x8, Text},
-    mock_display::MockDisplay,
     pixelcolor::Rgb888,
+    prelude::Pixel,
     prelude::*,
     primitives::Circle,
     style::{PrimitiveStyle, TextStyle},
 };
+use lazy_static::lazy_static;
+use spin::RwLock;
 
 use crate::component::whiteboard::Whiteboard;
+
+lazy_static! {
+    pub static ref DISPLAY_BUFFER: RwLock<Vec<Pixel<Rgb888>>> = RwLock::new(Vec::new());
+}
 
 pub trait DisplayUi {
     // 重新设置 等级
@@ -18,8 +24,10 @@ pub trait DisplayUi {
     fn position(&mut self, position: (u32, u32));
     // 重新定义
     fn resize(&mut self, height: u32, width: u32);
-    // 绘图方法
+    // 绘图方法 不建议使用这个方法
     fn draw(&mut self);
+    // 刷新缓存的方法
+    fn flush(&mut self);
 }
 
 // 顶层GUI容器
@@ -50,16 +58,21 @@ where
                 size.height,
                 0,
                 (0, 0),
-                Rgb888::new(255, 255, 255),
+                Rgb888::new(0, 0, 0),
             ))],
         }
     }
 
     // 要有一个draw方法？
     pub fn draw(&mut self) {
+        // todo 这里先排序在处理这个方法
         for component in self.components.iter_mut() {
-            component.draw();
+            // todo 这里的刷选没有每个都管理自己的buffer
+            component.flush();
         }
+        // 画全部的像素点
+        self.graphic
+            .draw_iter(DISPLAY_BUFFER.read().iter().copied());
     }
 
     // 测试画图方法

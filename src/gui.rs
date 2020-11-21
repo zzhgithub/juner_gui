@@ -70,12 +70,12 @@ where
         DISPLAY_BUFFER.write().clear();
         // 先排序
 
-        let c_list = self.components;
-        c_list.sort_by(|a: Box<dyn DisplayUi>, b: Box<dyn DisplayUi>| {
-            a.get_level().cmp(&b.get_level())
-        });
+        // let c_list = &self.components;
+        // c_list.sort_by(|a: Box<dyn DisplayUi>, b: Box<dyn DisplayUi>| {
+        //     a.get_level().cmp(&b.get_level())
+        // });
 
-        for component in c_list.iter_mut() {
+        for component in self.components.iter_mut() {
             // todo 这里的刷选没有每个都管理自己的buffer
             component.flush();
         }

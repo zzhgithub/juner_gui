@@ -40,7 +40,7 @@ pub fn image_by_text(
         match w {
             Some((i, j, k)) => match map.get(&k) {
                 Some(color) => image.push(Pixel(
-                    Point::new((x + i) as i32, (y + j) as i32),
+                    Point::new((x + j) as i32, (y + i) as i32),
                     color.clone(),
                 )),
                 None => {}

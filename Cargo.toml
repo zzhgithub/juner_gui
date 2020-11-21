@@ -11,6 +11,7 @@ embedded-graphics = "0.6"
 log = { version = "0.4", default-features = false, optional = true }
 lazy_static = {version = "1.4.0", features = ["spin_no_std"]}
 spin = "0.7.0"
+hashbrown = "0.9.1"
 
 [dev-dependencies]
 embedded-graphics-simulator = "0.2"

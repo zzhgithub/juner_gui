@@ -24,3 +24,4 @@ pub use embedded_graphics::{
 
 pub mod gui;
 pub mod component;
+pub mod helper;

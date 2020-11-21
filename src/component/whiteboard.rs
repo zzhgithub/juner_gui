@@ -46,17 +46,18 @@ impl DisplayUi for Whiteboard {
     fn flush(&mut self) {
         use crate::gui::DISPLAY_BUFFER;
         let (x, y) = self.position;
-        if !self.locked {
-            for i in x..self.height {
-                for j in y..self.width {
-                    // 画全部的点
-                    DISPLAY_BUFFER
-                        .write()
-                        .push(Pixel(Point::new(i as i32, j as i32), self.color));
-                    // 这里的内存怎么不溢出
-                }
+        for i in x..self.height {
+            for j in y..self.width {
+                // 画全部的点
+                DISPLAY_BUFFER
+                    .write()
+                    .push(Pixel(Point::new(i as i32, j as i32), self.color));
+                // 这里的内存怎么不溢出
             }
-            self.locked = true;
         }
+    }
+
+    fn get_level(&mut self) -> &usize {
+        &self.level
     }
 }
